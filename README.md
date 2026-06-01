@@ -2,7 +2,7 @@
 
 Minimalist S3 server in Zig. No AI.
 
-> Forked from and inspired by [zs3](https://github.com/Lulzx/zs3). Tiny binary. Focuse on simplicity.
+> Forked from and inspired by [zs3](https://github.com/Lulzx/zs3). Tiny binary. Focus on simplicity.
 
 **Do not use in production.**
 
@@ -38,9 +38,9 @@ zig build -Doptimize=ReleaseFast
 ./zig-out/bin/z3 --port=9000 --data-dir=./data --tmp=./tmp
 ```
 
-Server runs on **http://localhost:9000"** by default.
+Server runs on **http://localhost:9000** by default.
 
-Data is stored in `./data`'.
+Data is stored in `./data`.
 
 Default credentials (admin): `minioadmin` / `minioadmin`
 
