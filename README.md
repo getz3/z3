@@ -2,7 +2,7 @@
 
 Minimalist S3 server in Zig. No AI.
 
-> Forked from and inspired by [zs3](https://github.com/Lulzx/zs3). Tiny binary. Focus on simplicity.
+> Forked from and inspired by [zs3](https://github.com/Lulzx/zs3). Tiny binary. Focuses on simplicity.
 
 **Do not use in production.**
 
