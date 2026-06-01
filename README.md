@@ -1,35 +1,52 @@
-# z3
+# Z3
 
-S3-compatible storage.
+Minimalist S3 server in Zig. No AI.
 
-> Thanks to the [zs3](https://github.com/Lulzx/zs3) project — some code and documentation originates from it.
+> Forked from and inspired by [zs3](https://github.com/Lulzx/zs3). Tiny binary. Focuse on simplicity.
 
-## Supported capabilities
-- Full AWS SigV4 authentication (works with aws-cli, boto3, any SDK)
-- PUT, GET, DELETE, HEAD, LIST (v2)
-- HeadBucket for bucket existence checks
-- DeleteObjects batch operation
-- Multipart uploads for large files
-- Range requests for streaming/seeking (RFC 7233 compliant suffix ranges)
-- HTTP 100-continue support (boto3 compatible)
+**Do not use in production.**
 
-## Capabilities under development
+## Why Z3?
+- Extremely small and fast (thanks to Zig)
+- Clean implementation with no AI slop
+- Ideal for S3 development and testing
+- Perfect for edge deployments or embedded use case
+
+## Features
+- Full AWS SigV4 authentication (compatible with `aws-cli`, `boto3`, and all major SDKs)
+- Core operations: `PUT`, `GET`, `DELETE`, `HEAD`, `LIST` (v2)
+- `HeadBucket` for bucket existence checks
+- `DeleteObjects` for batch delete
+- **Multipart uploads** for large files
+- **Range requests** for streaming/seeking
+- HTTP `100-continue` support
+
+## Under Development
 - Versioning, lifecycle policies, bucket ACLs
 - Pre-signed URLs, object tagging, encryption
 
 ## Quick Start
 
 ```bash
+# Build
 zig build -Doptimize=ReleaseFast
+
+# Run
 ./zig-out/bin/z3
+
+# Options
+./zig-out/bin/z3 --port=9000 --data-dir=./data --tmp=./tmp
 ```
 
-Server listens on port 9000, stores data in `./data`. Default credentials are
-`minioadmin:minioadmin` (admin role) — **do not use in production**.
+Server runs on **http://localhost:9000"** by default.
 
-### Credentials & roles
+Data is stored in `./data`'.
 
-Provide credentials at runtime (`--acl=`):
+Default credentials (admin): `minioadmin` / `minioadmin`
+
+### Credentials & Roles
+
+Create credentials at runtime (`--acl=`):
 
 ```bash
 ./zig-out/bin/z3 --acl="admin:akey:asec,reader:rkey:rsec,writer:wkey:wsec"
@@ -37,16 +54,15 @@ Provide credentials at runtime (`--acl=`):
 
 Format: `role:access_key:secret_key`, comma-separated. Roles:
 
-| Role   | Allowed methods                              |
+| Role   | Allowed Methods                              |
 |--------|----------------------------------------------|
 | admin  | all                                          |
 | writer | GET, HEAD, OPTIONS, PUT, POST, DELETE        |
 | reader | GET, HEAD, OPTIONS                           |
 
-Other useful flags: `--port=PORT`, `--data-dir=PATH`, `--tmp=PATH` `--help`.
-
-
 ## Usage
+
+### AWS CLI
 
 ```bash
 export AWS_ACCESS_KEY_ID=minioadmin
@@ -59,7 +75,7 @@ aws --endpoint-url http://localhost:9000 s3 cp s3://mybucket/file.txt ./
 aws --endpoint-url http://localhost:9000 s3 rm s3://mybucket/file.txt
 ```
 
-Works with any S3 SDK:
+### `boto3` SDK:
 
 ```python
 import boto3
@@ -75,24 +91,18 @@ s3.put_object(Bucket='test', Key='hello.txt', Body=b'world')
 print(s3.get_object(Bucket='test', Key='hello.txt')['Body'].read())
 ```
 
-## The interesting bits
-
-**SigV4 is elegant.** The whole auth flow is ~150 lines. AWS's "complex" signature scheme is really just: canonical request -> string to sign -> HMAC chain -> compare. No magic.
-
-**Storage is just files.** `mybucket/folder/file.txt` is literally `./data/mybucket/folder/file.txt`. You can `ls` your buckets. You can `cp` files in. It just works.
-
-**Zig makes this easy.** No runtime, no GC, no hidden allocations, no surprise dependencies. 
-
 ## Design
 
-Every S3 request is split into two halves, **A** and **B**:
+The z3 achitecture is built on `polyrole`, a multi-role finite state machine that models the full lifecycle of an S3 request.
 
-- **A (Server):** lightweight operations that need consistency guarantees — access key
+Every S3 request is split into two phases, **A** and **B**:
+
+- **A (Server):** Handle lightweight operations that need consistency guarantees — access key
   lookups, global counter increments, metrics updates, log writes. All of **A runs
   sequentially** in a single thread.
-- **B (Client):** heavy disk I/O and CPU work — HTTP header parsing, SigV4 HMAC
-  computation, file reads/writes, request routing, response serialization. All of
-  **B runs concurrently** across a pool of zio coroutines.
+- **B (Client):** Handle heavy CPU and disk I/O tasks, including HTTP header parsing, SigV4 HMAC
+  computation, file payload reads/writes, request routing, response serialization. All of
+  **B operations run concurrently** across a pool of `zio` coroutines.
 
 Under load this forms a "set of A" and a "set of B". Serializing A and parallelising
 B yields the best throughput.
@@ -120,21 +130,6 @@ pointer after B has exited, making this safe without runtime checks.
 
 > The bulk of the B-side code is derived from [zs3](https://github.com/Lulzx/zs3).
 
-## When to use this
-
-- Local dev (replacing localstack/minio)
-- CI artifact storage
-- Self-hosted backups
-- Embedded/appliance storage
-- Learning how S3 actually works
-- Learning polyrole
-
-## When NOT to use this
-
-- Production with untrusted users
-- Anything requiring durability guarantees beyond "it's on your disk"
-- If you need any feature in the "not supported" list
-
 ## Building
 
 Requires Zig 0.16.
@@ -155,6 +150,8 @@ python3 test_comprehensive.py   # 66/66 boto3 tests (standalone)
 Requires `pip install boto3` for comprehensive tests.
 
 ## Benchmark
+
+**TODO:**
 
 ## Limits
 
@@ -177,5 +174,6 @@ Requires `pip install boto3` for comprehensive tests.
 
 TLS not included. Use a reverse proxy (nginx, caddy) for HTTPS.
 
-## api document
-[api](api.md)
+## License
+
+**The MIT License**
