@@ -151,7 +151,80 @@ Requires `pip install boto3` for comprehensive tests.
 
 ## Benchmark
 
-**TODO:**
+```shell
+❯ zig build -Doptimize=ReleaseFast run
+```
+
+```shell
+❯ python benchmark.py --only zs3
+
+============================================================
+Benchmarking: zs3
+Endpoint: http://localhost:9000
+Iterations: 100
+============================================================
+  PUT 1kb... 100 ok
+  PUT 4kb... 100 ok
+  PUT 64kb... 100 ok
+  PUT 1mb... 100 ok
+  GET 1kb... 100 ok
+  GET 4kb... 100 ok
+  GET 64kb... 100 ok
+  GET 1mb... 100 ok
+  LIST... 100 ok
+  DELETE... 400 ok
+
+============================================================
+Results: zs3
+============================================================
+Operation             Mean     Median        P99    Ops/sec
+------------------------------------------------------------
+create_bucket        5.50ms      5.50ms      5.50ms      181.7
+put_1kb              0.43ms      0.41ms      1.33ms     2312.9
+put_4kb              0.42ms      0.41ms      0.62ms     2370.6
+put_64kb             0.61ms      0.62ms      0.81ms     1627.5
+put_1mb              2.99ms      2.98ms      4.37ms      334.0
+get_1kb              0.35ms      0.34ms      0.79ms     2858.8
+get_4kb              0.31ms      0.29ms      0.44ms     3237.5
+get_64kb             0.33ms      0.33ms      0.42ms     3014.7
+get_1mb              0.53ms      0.52ms      0.71ms     1885.7
+list                 2.08ms      2.08ms      2.63ms      480.0
+delete               0.34ms      0.33ms      0.53ms     2937.0
+
+============================================================
+Concurrent Benchmark: zs3
+Endpoint: http://localhost:9000
+File size: 1.0MB
+Concurrency: 50 workers, 20 requests each
+Total requests: 1000
+============================================================
+  PUT 50 files... 50 ok, 0 failed (0.07s)
+  Running concurrent GET requests... 1000 ok, 0 failed
+
+============================================================
+Concurrent Results: zs3
+============================================================
+  --- PUT ---
+  Total time:     0.07s
+  Requests:       50/50 successful
+  Throughput:     691.0 req/s
+  Latency mean:   59.20ms
+  Latency median: 59.34ms
+  Latency p99:    70.64ms
+  Latency min:    47.01ms
+  Latency max:    70.64ms
+  --- GET ---
+  Total time:     0.37s
+  Requests:       1000/1000 successful
+  Throughput:     2731.2 req/s
+  Latency mean:   16.49ms
+  Latency median: 16.74ms
+  Latency p99:    26.77ms
+  Latency min:    0.69ms
+  Latency max:    32.71ms
+
+```
+
 
 ## Limits
 
