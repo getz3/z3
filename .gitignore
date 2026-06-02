@@ -6,3 +6,4 @@ build/
 .core.md
 data/
 tmp/
+log/
