@@ -56,7 +56,6 @@ pub fn build(b: *std.Build) void {
 
     const exe = b.addExecutable(.{
         .name = "z3",
-        .use_llvm = true, //arch sframe bug: https://codeberg.org/ziglang/zig/issues/30959
         .root_module = root_module,
     });
 
@@ -102,7 +101,6 @@ pub fn build(b: *std.Build) void {
                 .{ .name = "polyrole", .module = polyrole },
                 .{ .name = "root_module", .module = root_module },
             } }),
-            .use_llvm = true,
         });
 
         const run = b.addRunArtifact(graph_exe);
