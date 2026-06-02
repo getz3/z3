@@ -118,7 +118,7 @@ coroutine pool.
 
 The full A–B protocol is the state machine visualised:
 
-![graph](./graph/graph.svg)
+![graph](./graph/fsm.svg)
 
 This pattern mirrors the **Erlang client-server model**: the server (A) is passive,
 the client (B) sends messages and waits for replies.

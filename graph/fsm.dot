@@ -7,15 +7,15 @@ digraph fsm_state_graph {
     }
     subgraph cluster_fsm_1 {
       label = "s3: { .client, .server }";
-      0[shape=rect,  label=" c [0] Start .client -> { .server }", color = "red"];
-      1[shape=rect,  label=" S [1] ServerLookupCredential .server -> { .client }", color = "green"];
-      2[shape=rect,  label=" c [2] SigV4 .client -> { .server }", color = "blue"];
-      3[shape=rect,  label=" c [3] Route .client -> { .server }", color = "brown"];
-      4[shape=rect,  label=" c [4] Send .client -> { .server }", color = "navy"];
-      5[shape=rect,  label=" S [5] Success .server -> { .client }", color = "teal"];
-      7[shape=rect,  label=" S [7] Error .server -> { .client }", color = "magenta"];
-      8[shape=rect,  label=" c [8] Send .client -> { .server }", color = "darkred"];
-      9[shape=rect,  label=" S [9] WaitServer .server -> { .client }", color = "darkgreen"];
+      0[shape=rect,  label="🅱️[0] Start .client -> { .server }", color = "red"];
+      1[shape=rect,  label="🅰️[1] ServerLookupCredential .server -> { .client }", color = "green"];
+      2[shape=rect,  label="🅱️[2] SigV4 .client -> { .server }", color = "blue"];
+      3[shape=rect,  label="🅱️[3] Route .client -> { .server }", color = "brown"];
+      4[shape=rect,  label="🅱️[4] Send .client -> { .server }", color = "navy"];
+      5[shape=rect,  label="🅰️[5] Success .server -> { .client }", color = "teal"];
+      7[shape=rect,  label="🅰️[7] Error .server -> { .client }", color = "magenta"];
+      8[shape=rect,  label="🅱️[8] Send .client -> { .server }", color = "darkred"];
+      9[shape=rect,  label="🅰️[9] WaitServer .server -> { .client }", color = "darkgreen"];
     }
     0 -> 1 [label = "req_credential_and_id", color = "red", fontcolor = "red"];
     0 -> 8 [label = "failed", color = "red", fontcolor = "red"];

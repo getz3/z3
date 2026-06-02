@@ -1,4 +1,5 @@
 const std = @import("std");
+const addGraphFile = @import("polyrole").addGraphFile;
 
 pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
@@ -9,18 +10,19 @@ pub fn build(b: *std.Build) void {
         "backend",
         "Override the default event loop backend (io_uring, epoll, kqueue, iocp, poll)",
     );
+
     //polyrole
     const polyrole = b.dependency("polyrole", .{
         .target = target,
         .optimize = optimize,
-    });
+    }).module("root");
 
     //zio
     const zio = b.dependency("zio", .{
         .target = target,
         .optimize = optimize,
         .backend = backend,
-    });
+    }).module("zio");
 
     const tracy = b.option([]const u8, "tracy", "Enable Tracy integration. Supply path to Tracy source");
     const tracy_callstack = b.option(bool, "tracy-callstack", "Include callstack information with Tracy data. Does nothing if -Dtracy is not provided") orelse (tracy != null);
@@ -41,19 +43,21 @@ pub fn build(b: *std.Build) void {
     options.addOption([]const u8, "time", &iso_buf);
     options.addOption([]const u8, "source_version", git_head);
 
+    const root_module = b.createModule(.{
+        .root_source_file = b.path("src/main.zig"),
+        .target = target,
+        .optimize = optimize,
+        .imports = &.{
+            .{ .name = "polyrole", .module = polyrole },
+            .{ .name = "zio", .module = zio },
+        },
+        .strip = if (tracy != null) false else if (optimize == .Debug) false else true,
+    });
+
     const exe = b.addExecutable(.{
         .name = "z3",
         .use_llvm = true, //arch sframe bug: https://codeberg.org/ziglang/zig/issues/30959
-        .root_module = b.createModule(.{
-            .root_source_file = b.path("src/main.zig"),
-            .target = target,
-            .optimize = optimize,
-            .imports = &.{
-                .{ .name = "polyrole", .module = polyrole.module("root") },
-                .{ .name = "zio", .module = zio.module("zio") },
-            },
-            .strip = if (tracy != null) false else if (optimize == .Debug) false else true,
-        }),
+        .root_module = root_module,
     });
 
     exe.root_module.addOptions("build_options", options);
@@ -88,6 +92,35 @@ pub fn build(b: *std.Build) void {
 
     if (b.args) |args| {
         run_cmd.addArgs(args);
+    }
+    //generte graph
+    const run_gen_graph = b.step("gen-graph", "Generate graph.dot and graph.svg");
+    {
+        const graph_exe = b.addExecutable(.{
+            .name = "generate_graph",
+            .root_module = b.createModule(.{ .root_source_file = b.path("tools/graph.zig"), .target = target, .optimize = optimize, .imports = &.{
+                .{ .name = "polyrole", .module = polyrole },
+                .{ .name = "root_module", .module = root_module },
+            } }),
+            .use_llvm = true,
+        });
+
+        const run = b.addRunArtifact(graph_exe);
+        const graph_file = run.captureStdOut(.{});
+
+        const dot_cmd = b.addSystemCommand(&.{"dot"});
+
+        dot_cmd.addArg("-Tsvg");
+
+        dot_cmd.addFileArg(graph_file);
+
+        const graph_svg = dot_cmd.captureStdOut(.{});
+
+        const install_graph_dot = b.addInstallFileWithDir(graph_file, .{ .custom = "../graph" }, b.fmt("{s}.dot", .{"fsm"}));
+        const install_graph_svg = b.addInstallFileWithDir(graph_svg, .{ .custom = "../graph" }, b.fmt("{s}.svg", .{"fsm"}));
+
+        run_gen_graph.dependOn(&install_graph_svg.step);
+        run_gen_graph.dependOn(&install_graph_dot.step);
     }
 
     const exe_tests = b.addTest(.{
