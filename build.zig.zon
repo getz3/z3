@@ -5,8 +5,8 @@
     .minimum_zig_version = "0.16.0",
     .dependencies = .{
         .zio = .{
-            .url = "git+https://github.com/lalinsky/zio?ref=v0.11.0#53abdf9ce5e6279e29703a39180ce1cedd8ac4ca",
-            .hash = "zio-0.11.0-xHbVVEqQGwDz0MYoQ0j7Ke0Y9E_iZVe5eLAWK4gd9U0i",
+            .url = "git+https://github.com/lalinsky/zio#49218cd2de6b0987e13d61d3471ba3909e213333",
+            .hash = "zio-0.13.0-xHbVVJMrHQA3985UtC43b4fQaZtcw_jCWByOTYuaV9wl",
         },
         .polyrole = .{
             .url = "git+https://github.com/sdzx-1/polyrole.git#5c4f7cb527dc8d4098fd769a611678a79447546b",
