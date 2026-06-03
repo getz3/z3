@@ -527,7 +527,16 @@ pub const Start = union(enum) {
             }
         }
 
-        ctx.req.body = ctx.reader.bodyReader(&ctx.read_buf, .none, ctx.content_length);
+        const transfer_encoding: std.http.TransferEncoding = blk: {
+            if (headers.get("transfer-encoding")) |str| {
+                if (std.meta.stringToEnum(http.TransferEncoding, str)) |transfer| {
+                    break :blk transfer;
+                }
+            }
+            break :blk .none;
+        };
+
+        ctx.req.body = ctx.reader.bodyReader(&ctx.read_buf, transfer_encoding, ctx.content_length);
 
         const auth_header = ctx.req.header("authorization") orelse "";
         ctx.parsed_auth_header = zs3.SigV4.parseAuthHeader(auth_header) orelse {
