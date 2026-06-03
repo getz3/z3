@@ -563,7 +563,10 @@ pub const ServerLookupCredential = union(enum) {
         ctx.global_counter += 1;
         const current_client = ctx.current_client;
         if (ctx.access_control_map.get(current_client.parsed_auth_header.access_key)) |credential| {
-            current_client.credential = credential;
+            current_client.credential.access_key = credential.access_key;
+            current_client.credential.role = credential.role;
+            const arena = current_client.arena_allocaotr.allocator();
+            current_client.credential.secret_key = arena.dupe(u8, credential.secret_key) catch unreachable;
             current_client.id = ctx.global_counter;
             return .ok;
         }
