@@ -103,7 +103,7 @@ jobs:
           cache: "pip"
 
       - name: Install Python dependencies
-        run: pip install boto3 botocore
+        run: pip install -r requirements.txt
 
       - name: Build z3
         run: zig build -Doptimize=ReleaseFast -Dbackend=${{ matrix.backend }}
