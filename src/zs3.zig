@@ -843,6 +843,13 @@ pub fn handleListObjects(
     const bucket_path = try bucketPath(allocator, data_dir, bucket);
     defer allocator.free(bucket_path);
 
+    const encoding_type_url: bool = blk: {
+        if (getQueryParam(req.query, "encoding-type")) |url| {
+            if (std.mem.eql(u8, "url", url)) break :blk true;
+        }
+        break :blk false;
+    };
+
     const prefix_raw = getQueryParam(req.query, "prefix") orelse "";
     const prefix = try uriDecode(allocator, prefix_raw);
     defer allocator.free(prefix);
@@ -880,6 +887,8 @@ pub fn handleListObjects(
     const max_keys_num_str = std.fmt.bufPrint(&max_keys_num_buf, "{d}", .{max_keys}) catch "1000";
     try xml.appendSlice(allocator, max_keys_num_str);
     try xml.appendSlice(allocator, "</MaxKeys>");
+
+    if (encoding_type_url) try xml.appendSlice(allocator, "<EncodingType>url</EncodingType>");
 
     var keys: std.ArrayListUnmanaged(KeyInfo) = .empty;
     defer keys.deinit(allocator);
