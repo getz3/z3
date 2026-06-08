@@ -796,8 +796,6 @@ fn collectKeys(io: Io, allocator: Allocator, base_path: []const u8, current_pref
 
     var iter = dir.iterate();
     while (try iter.next(io)) |entry| {
-        if (entry.name[0] == '.') continue;
-
         // Skip metadata sidecar files — they are not user-visible objects
         if (entry.kind == .file and std.mem.endsWith(u8, entry.name, META_SUFFIX)) continue;
 
