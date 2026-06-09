@@ -25,8 +25,8 @@ import os
 
 # Configuration
 ENDPOINT = os.environ.get('ZS3_ENDPOINT', 'http://localhost:9000')
-ACCESS_KEY = os.environ.get('ZS3_ACCESS_KEY', 'minioadmin')
-SECRET_KEY = os.environ.get('ZS3_SECRET_KEY', 'minioadmin')
+ACCESS_KEY = os.environ.get('ZS3_ACCESS_KEY', 'z3admin')
+SECRET_KEY = os.environ.get('ZS3_SECRET_KEY', 'z3admin')
 REGION = 'us-east-1'
 
 # Test state

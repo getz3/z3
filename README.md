@@ -42,7 +42,7 @@ Server runs on **http://localhost:9000** by default.
 
 Data is stored in `./data`.
 
-Default credentials (admin): `minioadmin` / `minioadmin`
+Default credentials (admin): `z3admin` / `z3admin`
 
 ### Credentials & Roles
 
@@ -65,8 +65,8 @@ Format: `role:access_key:secret_key`, comma-separated. Roles:
 ### AWS CLI
 
 ```bash
-export AWS_ACCESS_KEY_ID=minioadmin
-export AWS_SECRET_ACCESS_KEY=minioadmin
+export AWS_ACCESS_KEY_ID=z3admin
+export AWS_SECRET_ACCESS_KEY=z3admin
 
 aws --endpoint-url http://localhost:9000 s3 mb s3://mybucket
 aws --endpoint-url http://localhost:9000 s3 cp file.txt s3://mybucket/
@@ -82,8 +82,8 @@ import boto3
 
 s3 = boto3.client('s3',
     endpoint_url='http://localhost:9000',
-    aws_access_key_id='minioadmin',
-    aws_secret_access_key='minioadmin'
+    aws_access_key_id='z3admin',
+    aws_secret_access_key='z3admin'
 )
 
 s3.create_bucket(Bucket='test')

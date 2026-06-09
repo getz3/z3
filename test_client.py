@@ -7,8 +7,8 @@ import urllib.request
 import urllib.parse
 
 HOST = "localhost:9000"
-ACCESS_KEY = "minioadmin"
-SECRET_KEY = "minioadmin"
+ACCESS_KEY = "z3admin"
+SECRET_KEY = "z3admin"
 REGION = "us-east-1"
 
 def sign_request(method, path, query="", headers=None, payload=b""):

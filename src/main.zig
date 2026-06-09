@@ -19,7 +19,7 @@ pub fn main(init: std.process.Init) !void {
     var port: u16 = 9000;
     var data_dir: []const u8 = "data";
     var tmp_dir: []const u8 = "tmp";
-    var raw_acl_list: []const u8 = "admin:minioadmin:minioadmin";
+    var raw_acl_list: []const u8 = "admin:z3admin:z3admin";
     var show_help: bool = false;
     var executor_threads: u6 = 4;
 
@@ -103,8 +103,8 @@ pub fn main(init: std.process.Init) !void {
     };
     defer gpa.free(access_control_list);
 
-    if (std.mem.eql(u8, raw_acl_list, "admin:minioadmin:minioadmin")) {
-        std.log.warn("Using built-in default credentials (admin:minioadmin:minioadmin) — DO NOT USE IN PRODUCTION", .{});
+    if (std.mem.eql(u8, raw_acl_list, "admin:z3admin:z3admin")) {
+        std.log.warn("Using built-in default credentials (admin:z3admin:z3admin) — DO NOT USE IN PRODUCTION", .{});
     }
 
     Io.Dir.cwd().createDir(io, data_dir, .default_dir) catch |err| switch (err) {
